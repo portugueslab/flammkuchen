@@ -14,6 +14,18 @@ support them), values, strings and numpy arrays very naturally. It can also
 store lists and tuples, but it's not as natural, so prefer numpy arrays whenever
 possible. Here's an example saving and HDF5 using :func:`deepdish.io.save`:
 
+>>> import flammkuchen as dd
+>>> d = {'foo': np.arange(10), 'bar': np.ones((5, 4, 3))}
+>>> dd.io.save('test.h5', d)
+
+It will try its best to save it in a way native to HDF5
+
+>>> import flammkuchen as dd
+>>> d = {'foo': np.arange(10), 'bar': np.ones((5, 4, 3))}
+>>> dd.io.save('test.h5', d)
+
+It will try its best to save it in a way native to HDF5
+
 >>> import deepdish as dd
 >>> d = {'foo': np.arange(10), 'bar': np.ones((5, 4, 3))}
 >>> dd.io.save('test.h5', d)
@@ -404,6 +416,34 @@ To give the base class a name, we can add
 Soft Links
 ----------
 In Python, many names can be bound to the same object. Deepdish accounts for
+this for many objects (dictionaries, lists, numpy arrays, pandas dataframes,
+SimpleNamespaces, etc) by using HDF5 soft links. This means the object itself
+is only written once and that these relationships are preserved upon loading.
+Recursion inside objects is also handled via soft links.
+
+Here is an example where soft links are used for both purposes:
+
+>>> import flammkuchen as dd
+>>> ones = np.ones((5, 4, 3))
+>>> d = {'foo': np.arange(10), 'bar': ones, 'baz': ones}
+>>> d['self'] = d   # to demonstrate recursion
+>>> dd.io.save('test.h5', d)
+
+Soft links are native to HDF5
+this for many objects (dictionaries, lists, numpy arrays, pandas dataframes,
+SimpleNamespaces, etc) by using HDF5 soft links. This means the object itself
+is only written once and that these relationships are preserved upon loading.
+Recursion inside objects is also handled via soft links.
+
+Here is an example where soft links are used for both purposes:
+
+>>> import flammkuchen as dd
+>>> ones = np.ones((5, 4, 3))
+>>> d = {'foo': np.arange(10), 'bar': ones, 'baz': ones}
+>>> d['self'] = d   # to demonstrate recursion
+>>> dd.io.save('test.h5', d)
+
+Soft links are native to HDF5
 this for many objects (dictionaries, lists, numpy arrays, pandas dataframes,
 SimpleNamespaces, etc) by using HDF5 soft links. This means the object itself
 is only written once and that these relationships are preserved upon loading.

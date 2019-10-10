@@ -1,7 +1,7 @@
 from __future__ import print_function, division, absolute_import
 
 # Load the following modules by default
-from deepdish.core import (
+from flammkuchen.core import (
                    bytesize,
                    humanize_bytesize,
                    memsize,
@@ -13,11 +13,8 @@ from deepdish.core import (
                    aslice,
                    )
 
-from deepdish import io
-from deepdish import util
-from deepdish import image
-from deepdish import parallel
-from deepdish.conf import config
+from flammkuchen import io
+from flammkuchen.conf import config
 
 
 class MovedPackage(object):
@@ -30,7 +27,7 @@ class MovedPackage(object):
             self.old_loc, self.new_loc))
 
 # This is temporary: remove after a few minor releases
-plot = MovedPackage('deepdish.plot', 'vzlog.image')
+plot = MovedPackage('flammkuchen.plot', 'vzlog.image')
 
 __all__ = ['deepdish',
            'set_verbose',

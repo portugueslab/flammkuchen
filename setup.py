@@ -24,9 +24,9 @@ CLASSIFIERS = [
 ]
 
 args = dict(
-    name='deepdish',
+    name='flammkuchen',
     version='0.3.4',
-    url="https://github.com/uchicago-cs/deepdish",
+    url="https://github.com/uchicago-cs/flammkuchen",
     description="Deep Learning experiments from University of Chicago.",
     maintainer='Gustav Larsson',
     maintainer_email='gustav.m.larsson@gmail.com',
@@ -36,10 +36,10 @@ args = dict(
     },
     scripts=['scripts/ddls'],
     packages=[
-        'deepdish',
-        'deepdish.parallel',
-        'deepdish.io',
-        'deepdish.util',
+        'flammkuchen',
+        'flammkuchen.parallel',
+        'flammkuchen.io',
+        'flammkuchen.util',
     ],
     license='BSD',
     classifiers=CLASSIFIERS,

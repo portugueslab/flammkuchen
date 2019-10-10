@@ -3,7 +3,7 @@ import unittest
 from tempfile import NamedTemporaryFile
 import os
 import numpy as np
-import deepdish as dd
+import flammkuchen as dd
 import pandas as pd
 from contextlib import contextmanager
 
@@ -368,16 +368,6 @@ class TestIO(unittest.TestCase):
             s = pd.Series(rs.randn(5), index=['a', 'b', 'c', 'd', 'e'])
             s1 = reconstruct(fn, s)
             assert (s == s1).all()
-
-    def test_pandas_panel(self):
-        rs = np.random.RandomState(1234)
-        with tmp_filename() as fn:
-            wp = pd.Panel(rs.randn(2, 5, 4), items=['Item1', 'Item2'],
-                          major_axis=pd.date_range('1/1/2000', periods=5),
-                          minor_axis=['A', 'B', 'C', 'D'])
-            wp1 = reconstruct(fn, wp)
-            # Not sure how to test equality, so we'll just do this
-            assert (wp.values == wp1.values).all()
 
     def test_compression_true(self):
         rs = np.random.RandomState(1234)

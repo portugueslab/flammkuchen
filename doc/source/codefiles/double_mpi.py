@@ -1,4 +1,4 @@
-import deepdish as dd
+import flammkuchen as dd
 
 def compute(x):
     return 2 * x

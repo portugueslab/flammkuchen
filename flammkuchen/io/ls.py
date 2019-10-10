@@ -10,7 +10,7 @@ import numpy as np
 import sys
 import os
 import re
-from deepdish import io, six, __version__
+from flammkuchen import io, six, __version__
 
 COLORS = dict(
     black='30',
@@ -657,7 +657,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(
         description=("Look inside HDF5 files. Works particularly well "
-                     "for HDF5 files saved with deepdish.io.save()."),
+                     "for HDF5 files saved with flammkuchen.io.save()."),
         prog='ddls',
         epilog='example: ddls test.h5 -i /foo/bar --ipython')
     parser.add_argument('file', nargs='+',
@@ -687,7 +687,7 @@ def main():
     parser.add_argument('-c', '--compression', action='store_true',
                         help=('print compression method for each array'))
     parser.add_argument('-v', '--version', action='version',
-                        version='deepdish {} (io protocol {})'.format(
+                        version='flammkuchen {} (io protocol {})'.format(
                             __version__, IO_VERSION))
     parser.add_argument('--column-width', type=int, default=None)
 
@@ -731,8 +731,8 @@ def main():
             path_desc,
             paint('data', 'blue', colorize=colorize))
 
-        # Import deepdish for the session
-        import deepdish as dd
+        # Import flammkuchen for the session
+        import flammkuchen as dd
         import IPython
         IPython.embed(header=welcome)
 

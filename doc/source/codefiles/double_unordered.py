@@ -1,4 +1,4 @@
-import deepdish as dd
+import flammkuchen as dd
 import numpy as np
 
 def compute(indices, x):

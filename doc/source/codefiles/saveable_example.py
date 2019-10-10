@@ -1,4 +1,4 @@
-import deepdish as dd
+import flammkuchen as dd
 
 class Foo(dd.util.SaveableRegistry):
     def __init__(self, x):

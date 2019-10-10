@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: flammkuchen
+Version: 0.3.4
+Summary: Deep Learning experiments from University of Chicago.
+Home-page: https://github.com/uchicago-cs/flammkuchen
+Maintainer: Gustav Larsson
+Maintainer-email: gustav.m.larsson@gmail.com
+License: BSD
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Topic :: Scientific/Engineering
+Provides-Extra: image

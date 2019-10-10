@@ -4,9 +4,10 @@ import numpy as np
 import tables
 import warnings
 from scipy import sparse
-from deepdish import conf
+from flammkuchen import conf
 try:
     import pandas as pd
+    pd.io.pytables._tables()
     _pandas = True
 except ImportError:
     _pandas = False
@@ -17,7 +18,7 @@ try:
 except ImportError:
     _sns = False
 
-from deepdish import six
+from flammkuchen import six
 
 IO_VERSION = 12
 DEEPDISH_IO_PREFIX = 'DEEPDISH_IO'
@@ -50,7 +51,7 @@ def is_pandas_dataframe(level):
 
 class ForcePickle(object):
     """
-    When saving an object with `deepdish.io.save`, you can wrap objects in this
+    When saving an object with `flammkuchen.io.save`, you can wrap objects in this
     class to force them to be pickled. They will automatically be unpacked at
     load time.
     """
@@ -104,7 +105,7 @@ def _get_compression_filters(compression='default'):
             ff = tables.Filters(complevel=level, complib=compression,
                                 shuffle=True)
         except Exception:
-            warnings.warn(("(deepdish.io.save) Missing compression method {}: "
+            warnings.warn(("(flammkuchen.io.save) Missing compression method {}: "
                            "no compression will be used.").format(compression))
             ff = None
     return ff
@@ -164,7 +165,7 @@ def _save_ndarray(handler, group, name, x, filters=None):
 
 
 def _save_pickled(handler, group, level, name=None):
-    warnings.warn(('(deepdish.io.save) Pickling {}: This may cause '
+    warnings.warn(('(flammkuchen.io.save) Pickling {}: This may cause '
                    'incompatibities (for instance between Python 2 and '
                    '3) and should ideally be avoided').format(level),
                   DeprecationWarning)
@@ -248,14 +249,14 @@ def _save_level(handler, group, level, name=None, filters=None, idtable=None):
     elif isinstance(level, np.ndarray):
         _save_ndarray(handler, group, name, level, filters=filters)
 
-    elif _pandas and isinstance(level, (pd.DataFrame, pd.Series, pd.Panel)):
+    elif _pandas and isinstance(level, (pd.DataFrame, pd.Series)):
         store = _HDFStoreWithHandle(handler)
         store.put(group._v_pathname + '/' + name, level)
 
     elif isinstance(level, (sparse.dok_matrix,
                             sparse.lil_matrix)):
         raise NotImplementedError(
-            'deepdish.io.save does not support DOK or LIL matrices; '
+            'flammkuchen.io.save does not support DOK or LIL matrices; '
             'please convert before saving to one of the following supported '
             'types: BSR, COO, CSR, CSC, DIA')
 
@@ -455,7 +456,7 @@ def _load_nonlink_level(handler, level, pathtable, pathname):
                 return level[:].view(dtype=(np.string_, itemsize))
         # This serves two purposes:
         # (1) unpack big integers: the only time we save arrays like this
-        # (2) unpack non-deepdish "scalars"
+        # (2) unpack non-flammkuchen "scalars"
         if level.shape == ():
             return level[()]
 
@@ -524,7 +525,7 @@ def save(path, data, compression='default'):
     A recommendation is to always convert your data to using only these types
     That way your data will be portable and can be opened through any HDF5
     reader. A class that helps you with this is
-    :class:`deepdish.util.Saveable`.
+    :class:`flammkuchen.util.Saveable`.
 
     Lists and tuples are supported and can contain heterogeneous types. This is
     mostly useful and plays well with HDF5 for short lists and tuples. If you
@@ -539,13 +540,13 @@ def save(path, data, compression='default'):
     be installed.
 
     You can change the default compression method to ``blosc`` (much faster,
-    but less portable) by creating a ``~/.deepdish.conf`` with::
+    but less portable) by creating a ``~/.flammkuchen.conf`` with::
 
         [io]
             compression: blosc
 
     This is the recommended compression method if you plan to use your HDF5
-    files exclusively through deepdish (or PyTables).
+    files exclusively through flammkuchen (or PyTables).
 
     Parameters
     ----------
@@ -616,7 +617,7 @@ def load(path, group=None, sel=None, unpack=False):
     sel : slice or tuple of slices
         If you specify `group` and the target is a numpy array, then you can
         use this to slice it. This is useful for opening subsets of large HDF5
-        files. To compose the selection, you can use `deepdish.aslice`.
+        files. To compose the selection, you can use `flammkuchen.aslice`.
     unpack : bool
         If True, a single-entry dictionaries will be unpacked and the value
         will be returned directly. That is, if you save ``dict(a=100)``, only
@@ -668,7 +669,7 @@ def load(path, group=None, sel=None, unpack=False):
 
             if v > IO_VERSION:
                 warnings.warn('This file was saved with a newer version of '
-                              'deepdish. Please upgrade to make sure it loads '
+                              'flammkuchen. Please upgrade to make sure it loads '
                               'correctly.')
 
             # Attributes can't be unpacked with the method above, so fall back
