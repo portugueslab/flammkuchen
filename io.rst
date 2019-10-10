@@ -12,23 +12,23 @@ Deepdish has a function that converts your Python data type into a native HDF5
 hierarchy. It stores dictionaries, SimpleNamespaces (for versions of Python that
 support them), values, strings and numpy arrays very naturally. It can also
 store lists and tuples, but it's not as natural, so prefer numpy arrays whenever
-possible. Here's an example saving and HDF5 using :func:`deepdish.io.save`:
+possible. Here's an example saving and HDF5 using :func:`flammkuchen.save`:
 
->>> import flammkuchen as dd
+>>> import flammkuchen as fl
 >>> d = {'foo': np.arange(10), 'bar': np.ones((5, 4, 3))}
->>> dd.io.save('test.h5', d)
+>>> fl.save('test.h5', d)
 
 It will try its best to save it in a way native to HDF5
 
->>> import flammkuchen as dd
+>>> import flammkuchen as fl
 >>> d = {'foo': np.arange(10), 'bar': np.ones((5, 4, 3))}
->>> dd.io.save('test.h5', d)
+>>> fl.save('test.h5', d)
 
 It will try its best to save it in a way native to HDF5
 
->>> import deepdish as dd
+>>> import deepdish as fl
 >>> d = {'foo': np.arange(10), 'bar': np.ones((5, 4, 3))}
->>> dd.io.save('test.h5', d)
+>>> fl.save('test.h5', d)
 
 It will try its best to save it in a way native to HDF5::
 
@@ -36,7 +36,7 @@ It will try its best to save it in a way native to HDF5::
     bar                      Dataset {5, 4, 3}
     foo                      Dataset {10}
 
-We also offer our own version of ``h5ls`` that works really well with deepdish
+We also offer our own version of ``h5ls`` that works really well with flammkuchen
 saved HDF5 files::
 
     $ ddls test.h5
@@ -44,9 +44,9 @@ saved HDF5 files::
     /foo                       array (10,) [int64]
 
 We can now reconstruct the dictionary from the file using
-:func:`deepdish.io.load`:
+:func:`flammkuchen.load`:
 
->>> d = dd.io.load('test.h5')
+>>> d = fl.load('test.h5')
 
 Dictionaries
 ------------
@@ -65,7 +65,7 @@ Resulting in::
     /foo/baz                 Dataset {3}
     /qux                     Dataset {12}
 
-Again, we can use the deepdish tool for better inspection::
+Again, we can use the flammkuchen tool for better inspection::
 
     $ ddls test.h5
     /foo                       dict
@@ -94,7 +94,7 @@ For h5ls, the results are identical to the Dictionary example::
     /foo/baz                 Dataset {3}
     /qux                     Dataset {12}
 
-Again, we can use the deepdish tool for better inspection. For a version of
+Again, we can use the flammkuchen tool for better inspection. For a version of
 Python that supports SimpleNamespaces::
 
     $ ddls test.h5
@@ -206,14 +206,14 @@ returned. See `Fake top-level group`_.
 
 Pandas data structures
 ----------------------
-The pandas_ data structures ``DataFrame``, ``Series`` and ``Panel`` are
+The pandas_ data structures ``DataFrame`` and ``Series`` are
 natively supported. This is thanks to pandas_ already providing support for this
-with the same PyTables backend as deepdish::
+with the same PyTables backend as flammkuchen::
 
     import pandas as pd
     df = pd.DataFrame({'int': np.arange(3), 'name': ['zero', 'one', 'two']})
 
-    dd.io.save('test.h5', df)
+    fl.save('test.h5', df)
 
 We can inspect this as usual::
 
@@ -243,7 +243,7 @@ knows how to read data frames by invoking the ``--raw`` command::
 
 Sparse matrices
 ---------------
-Scipy offers several types of sparse matrices, of which deepdish can save the
+Scipy offers several types of sparse matrices, of which flammkuchen can save the
 types BSR, COO, CSC, CSR and DIA. The types DOK and LIL are currently not
 supported (note that these two types are mainly for incrementally building
 sparse matrices anyway).
@@ -253,9 +253,9 @@ Just like with pandas data types, you can inspect the storage format using
 
 Compression
 -----------
-The way sparse matrices are stored in deepdish are identical to how they are
+The way sparse matrices are stored in flammkuchen are identical to how they are
 represented in Numpy, meaning there is no conversion time and the storage is
-compact. The further minimize the disk space, deepdish offer several means
+compact. The further minimize the disk space, flammkuchen offer several means
 of compressing the data (all thanks to the powerful PyTables backend).
 
 Here is a comparison on a large (100 billion elements) and sparse
@@ -267,24 +267,18 @@ Method                        Compression  Space (MB)  Write time (s)  Read time
 scipy's mmwrite                         N         145           79             40
 numpy's save                            N         134            1.36           0.75
 pickle                                  N         115            0.63           0.17
-deepdish (no compression)               N         115            0.52           0.17
+flammkuchen (no compression)            N         115            0.52           0.17
 numpy's savez_compressed                Y          32            8.88           1.33
 pickle (gzip)                           Y          29            5.19           0.86
-deepdish (blosc)                        Y          24            0.36           0.37
-deepdish (zlib)                         Y          21            9.01           0.83
-============================  ===========  ==========  ==============  =============
+flammkuchen (blosc)                     Y          24            0.36           0.37
+flammkuchen (zlib)                      Y          21            9.01           0.83
+===========================   ===========  ==========  ==============  =============
 
 This particular matrix had only nonzero elements that were set to 1, which
 meant even more compression could be applied. The default compression in
-deepdish is zlib, since it is widely supported and means your HDF5 files saved
-with deepdish can be universally read. However, blosc is clearly a much better
-choice, so if interoperability (e.g. with MATLAB) is not a priority, we
-encourage you to change the default. You can do this by placing the following
-in the file ``~/.deepdish.conf``::
-
-    [io]
-    compression: blosc
-
+flammkuchen is zlib, since it is widely supported and means your HDF5 files saved
+with flammkuchen can be universally read. However, blosc is clearly a much better
+choice, so if interoperability (e.g. with MATLAB) is not a priority.
 To change the default to no compression, use ``compression: none``.
 
 Quick inspection
@@ -321,20 +315,20 @@ Partial loading
 
 A specific level can be loaded as follows::
 
-    dd.io.save('test.h5', dict(foo=dict(bar=np.ones((10, 5)))))
+    fl.save('test.h5', dict(foo=dict(bar=np.ones((10, 5)))))
 
-    bar = dd.io.load('test.h5', '/foo/bar')
+    bar = fl.load('test.h5', '/foo/bar')
 
 You can even load slices of arrays::
 
-    bar_slice = dd.io.load('test.h5', '/foo/bar', sel=dd.aslice[:5, -2:])
+    bar_slice = fl.load('test.h5', '/foo/bar', sel=dd.aslice[:5, -2:])
 
 The file will never be read in full, not even the array, so this technique can
 be used to step through very large arrays.
 
 To load multiple groups at once, use a list of strings::
 
-    data, label = dd.io.load('training.h5', ['/data', '/label'])
+    data, label = fl.load('training.h5', ['/data', '/label'])
 
 Pickled objects
 ---------------
@@ -343,13 +337,13 @@ suggestion is to convert classes to to dictionary-like structures first, but
 sometimes it can be nice to be able to dump anything into a file. This is why
 deepdish also offers pickling as a last resort::
 
-    import deepdish as dd
+    import flammkuchen as fl
 
     class Foo(object):
         pass
 
     foo = Foo()
-    dd.io.save('test.h5', dict(foo=foo))
+    fl.save('test.h5', dict(foo=foo))
 
 Inspecting this file will yield::
 
@@ -357,29 +351,26 @@ Inspecting this file will yield::
     /foo                       pickled [object]
 
 Note that the class `Foo` has to be defined in the file that calls
-``dd.io.load``.
+``fl.load``.
 
 Avoid relying on pickling, since it hurts the interoperability provided by
-deepdish's HDF5 saving. Each pickled object will raise a
+flammkuchen's HDF5 saving. Each pickled object will raise a
 ``DeprecationWarning``, so call Python with ``-Wall`` to make sure you aren't
 implicitly pickling something. You can of course also use ``ddls`` to inspect
 the file to make sure nothing is pickled.
 
-If deepdish fatally fails to save an object, you should first report this as an
+If flammkuchen fatally fails to save an object, you should first report this as an
 issue on GitHub. As a quick fix, you can force pickling by wrapping the object
-in :func:`deepdish.io.ForcePickle`::
+in :func:`flammkuchen.ForcePickle`::
 
-    dd.io.save('test.h5', {'foo': dd.io.ForcePickle('pickled string')})
+    fl.save('test.h5', {'foo': fl.ForcePickle('pickled string')})
 
 Class instances
 ---------------
 Storing classes can be done by converting them to and from dictionary
 structures. This is a bit more work than straight up pickling, but the benefit
 is that they are inspectable from outside Python, and compatible between Python
-2 and 3 (which pickled classes are not!). This process can be facilitated by
-subclassing :class:`deepdish.util.SaveableRegistry`:
-
-.. literalinclude:: codefiles/saveable_example.py
+2 and 3 (which pickled classes are not!).
 
 Now, we can save an instane of `Foo` directly to an HDF5 file by:
 
@@ -410,12 +401,12 @@ registered named can be accessed through:
 'bar'
 
 To give the base class a name, we can add
-``dd.util.SaveableRegistry.register('foo')`` before the class definition.
+``fl.util.SaveableRegistry.register('foo')`` before the class definition.
 
 
 Soft Links
 ----------
-In Python, many names can be bound to the same object. Deepdish accounts for
+In Python, many names can be bound to the same object. Flammkuchen accounts for
 this for many objects (dictionaries, lists, numpy arrays, pandas dataframes,
 SimpleNamespaces, etc) by using HDF5 soft links. This means the object itself
 is only written once and that these relationships are preserved upon loading.
@@ -423,11 +414,11 @@ Recursion inside objects is also handled via soft links.
 
 Here is an example where soft links are used for both purposes:
 
->>> import flammkuchen as dd
+>>> import flammkuchen as fl
 >>> ones = np.ones((5, 4, 3))
 >>> d = {'foo': np.arange(10), 'bar': ones, 'baz': ones}
 >>> d['self'] = d   # to demonstrate recursion
->>> dd.io.save('test.h5', d)
+>>> fl.save('test.h5', d)
 
 Soft links are native to HDF5
 this for many objects (dictionaries, lists, numpy arrays, pandas dataframes,
@@ -437,11 +428,11 @@ Recursion inside objects is also handled via soft links.
 
 Here is an example where soft links are used for both purposes:
 
->>> import flammkuchen as dd
+>>> import flammkuchen as fl
 >>> ones = np.ones((5, 4, 3))
 >>> d = {'foo': np.arange(10), 'bar': ones, 'baz': ones}
 >>> d['self'] = d   # to demonstrate recursion
->>> dd.io.save('test.h5', d)
+>>> fl.save('test.h5', d)
 
 Soft links are native to HDF5
 this for many objects (dictionaries, lists, numpy arrays, pandas dataframes,
@@ -451,11 +442,11 @@ Recursion inside objects is also handled via soft links.
 
 Here is an example where soft links are used for both purposes:
 
->>> import deepdish as dd
+>>> import flammkuchen as fl
 >>> ones = np.ones((5, 4, 3))
 >>> d = {'foo': np.arange(10), 'bar': ones, 'baz': ones}
 >>> d['self'] = d   # to demonstrate recursion
->>> dd.io.save('test.h5', d)
+>>> fl.save('test.h5', d)
 
 Soft links are native to HDF5::
 
@@ -476,7 +467,7 @@ link to the top level group. With ``ddls``::
 
 Verify that ``d['bar']`` and ``d['baz']`` refer to the same object:
 
->>> d = dd.io.load('test.h5')
+>>> d = fl.load('test.h5')
 >>> d['bar'] is d['baz']
 True
 
@@ -484,5 +475,3 @@ Also verify that ``d['self']`` is ``d``:
 
 >>> d['self'] is d
 True
-
-.. _pandas: http://pandas.pydata.org/
