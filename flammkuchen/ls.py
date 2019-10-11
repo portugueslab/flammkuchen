@@ -1,8 +1,7 @@
 """
 Look inside HDF5 files from the terminal, especially those created by deepdish.
 """
-from __future__ import division, print_function, absolute_import
-from .hdf5io import (DEEPDISH_IO_VERSION_STR, DEEPDISH_IO_PREFIX,
+from flammkuchen.hdf5io import (DEEPDISH_IO_VERSION_STR, DEEPDISH_IO_PREFIX,
                      DEEPDISH_IO_UNPACK, DEEPDISH_IO_ROOT_IS_SNS,
                      IO_VERSION, _sns, is_pandas_dataframe)
 import tables
@@ -10,7 +9,7 @@ import numpy as np
 import sys
 import os
 import re
-from flammkuchen import io, six, __version__
+from flammkuchen import __version__
 
 COLORS = dict(
     black='30',
@@ -444,7 +443,7 @@ class ValueNode(Node):
         return 'ValueNode(type={})'.format(type(self.value))
 
     def info(self, colorize=True, final_level=False):
-        if isinstance(self.value, six.text_type):
+        if isinstance(self.value, str):
             if len(self.value) > 25:
                 s = repr(self.value[:22] + '...')
             else:
@@ -454,7 +453,7 @@ class ValueNode(Node):
                                type_color='green',
                                extra='({})'.format(len(self.value)),
                                colorize=colorize)
-        elif isinstance(self.value, six.binary_type):
+        elif isinstance(self.value, bytes):
             if len(self.value) > 25:
                 s = repr(self.value[:22] + b'...')
             else:

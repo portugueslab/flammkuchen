@@ -46,9 +46,10 @@ def is_pandas_dataframe(level):
             'pandas_type' in level._v_attrs)
 
 
+
 class ForcePickle(object):
     """
-    When saving an object with `flammkuchen.io.save`, you can wrap objects in this
+    When saving an object with `flammkuchen.save`, you can wrap objects in this
     class to force them to be pickled. They will automatically be unpacked at
     load time.
     """
@@ -102,7 +103,7 @@ def _get_compression_filters(compression='default'):
             ff = tables.Filters(complevel=level, complib=compression,
                                 shuffle=True)
         except Exception:
-            warnings.warn(("(flammkuchen.io.save) Missing compression method {}: "
+            warnings.warn(("(flammkuchen.save) Missing compression method {}: "
                            "no compression will be used.").format(compression))
             ff = None
     return ff
@@ -162,7 +163,7 @@ def _save_ndarray(handler, group, name, x, filters=None):
 
 
 def _save_pickled(handler, group, level, name=None):
-    warnings.warn(('(flammkuchen.io.save) Pickling {}: This may cause '
+    warnings.warn(('(flammkuchen.save) Pickling {}: This may cause '
                    'incompatibities (for instance between Python 2 and '
                    '3) and should ideally be avoided').format(level),
                   DeprecationWarning)
@@ -253,7 +254,7 @@ def _save_level(handler, group, level, name=None, filters=None, idtable=None):
     elif isinstance(level, (sparse.dok_matrix,
                             sparse.lil_matrix)):
         raise NotImplementedError(
-            'flammkuchen.io.save does not support DOK or LIL matrices; '
+            'flammkuchen.save does not support DOK or LIL matrices; '
             'please convert before saving to one of the following supported '
             'types: BSR, COO, CSR, CSC, DIA')
 
@@ -675,3 +676,10 @@ def load(path, group=None, sel=None, unpack=False):
                 data = next(iter(data.values()))
 
     return data
+
+
+class SliceClass(object):
+    def __getitem__(self, index):
+        return index
+
+aslice = SliceClass()
