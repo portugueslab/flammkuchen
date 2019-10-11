@@ -18,7 +18,6 @@ try:
 except ImportError:
     _sns = False
 
-from flammkuchen import six
 
 IO_VERSION = 12
 DEEPDISH_IO_PREFIX = 'DEEPDISH_IO'
@@ -27,7 +26,7 @@ DEEPDISH_IO_UNPACK = DEEPDISH_IO_PREFIX + '_DEEPDISH_IO_UNPACK'
 DEEPDISH_IO_ROOT_IS_SNS = DEEPDISH_IO_PREFIX + '_ROOT_IS_SNS'
 
 # Types that should be saved as pytables attribute
-ATTR_TYPES = (int, float, bool, six.string_types, six.binary_type,
+ATTR_TYPES = (int, float, bool, str, bytes,
               np.int8, np.int16, np.int32, np.int64, np.uint8,
               np.uint16, np.uint32, np.uint64, np.float16, np.float32,
               np.float64, np.bool_, np.complex64, np.complex128)
@@ -79,7 +78,7 @@ def _dict_native_ok(d):
 
     # All keys must be strings
     for k in d:
-        if not isinstance(k, six.string_types):
+        if not isinstance(k, str):
             return False
 
     return True
@@ -208,7 +207,7 @@ def _save_level(handler, group, level, name=None, filters=None, idtable=None):
         new_group = handler.create_group(group, name,
                                          "dict:{}".format(len(level)))
         for k, v in level.items():
-            if isinstance(k, six.string_types):
+            if isinstance(k, str):
                 _save_level(handler, new_group, v, name=k, filters=filters,
                             idtable=idtable)
 
@@ -218,7 +217,7 @@ def _save_level(handler, group, level, name=None, filters=None, idtable=None):
         new_group = handler.create_group(
             group, name, "SimpleNamespace:{}".format(len(level.__dict__)))
         for k, v in level.__dict__.items():
-            if isinstance(k, six.string_types):
+            if isinstance(k, str):
                 _save_level(handler, new_group, v, name=k, filters=filters,
                             idtable=idtable)
 

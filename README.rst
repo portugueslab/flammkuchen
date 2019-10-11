@@ -14,22 +14,18 @@
 .. image:: https://img.shields.io/badge/license-BSD%203--Clause-blue.svg?style=flat
     :target: http://opensource.org/licenses/BSD-3-Clause 
 
-deepdish
+Flammkuchen
 ========
 
-Flexible HDF5 saving/loading and other data science tools from the University of Chicago. This repository also host a Deep Learning blog:
-
-* http://deepdish.io
+Flexible HDF5 saving/loading and other data science tools from the University of Chicago.
 
 Installation
 ------------
 ::
 
-    pip install deepdish
+    pip install flammkuchen
 
-Alternatively (if you have conda with the `conda-forge <https://conda-forge.github.io/>`__ channel)::
 
-    conda install deepdish
 
 
 Main feature
@@ -50,7 +46,7 @@ An example:
 
 .. code:: python
 
-    import deepdish as dd
+    import flammkuchen as fl
 
     d = {
         'foo': np.ones((10, 20)),
@@ -59,16 +55,16 @@ An example:
             'baz': 1.23,
         },
     }
-    dd.io.save('test.h5', d)
+    fl.save('test.h5', d)
 
-This can be reconstructed using ``dd.io.load('test.h5')``, or inspected through
+This can be reconstructed using ``fl.load('test.h5')``, or inspected through
 the command line using either a standard tool::
 
     $ h5ls test.h5
     foo                      Dataset {10, 20}
     sub                      Group
 
-Or, better yet, our custom tool ``ddls`` (or ``python -m deepdish.io.ls``)::
+Or, better yet, our custom tool ``ddls`` (or ``python -m fl.ls``)::
 
     $ ddls test.h5
     /foo                       array (10, 20) [float64]
@@ -78,7 +74,3 @@ Or, better yet, our custom tool ``ddls`` (or ``python -m deepdish.io.ls``)::
 
 Read more at `Saving and loading data <http://deepdish.readthedocs.io/en/latest/io.html>`__.
 
-Documentation
--------------
-
-* http://deepdish.readthedocs.io/
