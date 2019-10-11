@@ -27,9 +27,9 @@ args = dict(
     name='flammkuchen',
     version='0.3.4',
     url="https://github.com/uchicago-cs/flammkuchen",
-    description="Deep Learning experiments from University of Chicago.",
-    maintainer='Gustav Larsson',
-    maintainer_email='gustav.m.larsson@gmail.com',
+    description="Deepdish fork for easy saving and loading of hdf5 files in python",
+    maintainer='Luigi Petrucco, Vilim Stih @portugueslab',
+    maintainer_email='luigi.petrucco@gmail.com',
     install_requires=required,
     extras_require={
         'image': ["skimage"],
