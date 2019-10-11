@@ -3,7 +3,7 @@ import unittest
 from tempfile import NamedTemporaryFile
 import os
 import numpy as np
-import flammkuchen as dd
+import flammkuchen as fl
 import pandas as pd
 from contextlib import contextmanager
 
@@ -31,13 +31,13 @@ def tmp_file():
 
 
 def reconstruct(fn, x):
-    dd.io.save(fn, x)
-    return dd.io.load(fn)
+    fl.save(fn, x)
+    return fl.load(fn)
 
 
 def assert_array(fn, x):
-    dd.io.save(fn, x)
-    x1 = dd.io.load(fn)
+    fl.save(fn, x)
+    x1 = fl.load(fn)
     np.testing.assert_array_equal(x, x1)
 
 
@@ -163,9 +163,9 @@ class TestIO(unittest.TestCase):
 
             # test 'sel' option on link ... need to read two vars
             # to ensure at least one is a link:
-            col1 = dd.io.load(fn, '/A', dd.aslice[:, 1])
+            col1 = fl.load(fn, '/A', fl.aslice[:, 1])
             assert np.all(A[:, 1] == col1)
-            col1 = dd.io.load(fn, '/B', dd.aslice[:, 1])
+            col1 = fl.load(fn, '/B', fl.aslice[:, 1])
             assert np.all(A[:, 1] == col1)
 
     def test_softlinks_recursion_sns(self):
@@ -274,48 +274,48 @@ class TestIO(unittest.TestCase):
     def test_load_group(self):
         with tmp_filename() as fn:
             x = dict(one=np.ones(10), two='string')
-            dd.io.save(fn, x)
+            fl.save(fn, x)
 
-            one = dd.io.load(fn, '/one')
+            one = fl.load(fn, '/one')
             np.testing.assert_array_equal(one, x['one'])
-            two = dd.io.load(fn, '/two')
+            two = fl.load(fn, '/two')
             assert two == x['two']
 
-            full = dd.io.load(fn, '/')
+            full = fl.load(fn, '/')
             np.testing.assert_array_equal(x['one'], full['one'])
             assert x['two'] == full['two']
 
     def test_load_multiple_groups(self):
         with tmp_filename() as fn:
             x = dict(one=np.ones(10), two='string', three=200)
-            dd.io.save(fn, x)
+            fl.save(fn, x)
 
-            one, three = dd.io.load(fn, ['/one', '/three'])
+            one, three = fl.load(fn, ['/one', '/three'])
             np.testing.assert_array_equal(one, x['one'])
             assert three == x['three']
 
-            three, two = dd.io.load(fn, ['/three', '/two'])
+            three, two = fl.load(fn, ['/three', '/two'])
             assert three == x['three']
             assert two == x['two']
 
     def test_load_slice(self):
         with tmp_filename() as fn:
             x = np.arange(3 * 4 * 5).reshape((3, 4, 5))
-            dd.io.save(fn, dict(x=x))
+            fl.save(fn, dict(x=x))
 
-            s = dd.aslice[:2]
-            xs = dd.io.load(fn, '/x', sel=s)
+            s = fl.aslice[:2]
+            xs = fl.load(fn, '/x', sel=s)
             np.testing.assert_array_equal(xs, x[s])
 
-            s = dd.aslice[:, 1:3]
-            xs = dd.io.load(fn, '/x', sel=s)
+            s = fl.aslice[:, 1:3]
+            xs = fl.load(fn, '/x', sel=s)
             np.testing.assert_array_equal(xs, x[s])
 
-            xs = dd.io.load(fn, sel=s, unpack=True)
+            xs = fl.load(fn, sel=s, unpack=True)
             np.testing.assert_array_equal(xs, x[s])
 
-            dd.io.save(fn, x)
-            xs = dd.io.load(fn, sel=s)
+            fl.save(fn, x)
+            xs = fl.load(fn, sel=s)
             np.testing.assert_array_equal(xs, x[s])
 
     def test_force_pickle(self):
@@ -325,14 +325,14 @@ class TestIO(unittest.TestCase):
             xf = dict(one=dict(two=x['one']['two']),
                       three=x['three'])
 
-            dd.io.save(fn, xf)
-            xs = dd.io.load(fn)
+            fl.save(fn, xf)
+            xs = fl.load(fn)
 
             np.testing.assert_array_equal(x['one']['two'], xs['one']['two'])
             assert x['three'] == xs['three']
 
             # Try direct loading one
-            two = dd.io.load(fn, '/one/two')
+            two = fl.load(fn, '/one/two')
             np.testing.assert_array_equal(x['one']['two'], two)
 
     def test_non_string_key_dict(self):
@@ -349,7 +349,7 @@ class TestIO(unittest.TestCase):
     def test_force_pickle(self):
         with tmp_filename() as fn:
             x = {0: 'zero', 1: 'one', 2: 'two'}
-            fx = dd.io.ForcePickle(x)
+            fx = fl.ForcePickle(x)
             d = dict(foo=x, bar=100)
             fd = dict(foo=fx, bar=100)
             d1 = reconstruct(fn, fd)
@@ -374,8 +374,8 @@ class TestIO(unittest.TestCase):
         with tmp_filename() as fn:
             x = rs.normal(size=(1000, 5))
             for comp in [None, True, 'blosc', 'zlib', ('zlib', 5)]:
-                dd.io.save(fn, x, compression=comp)
-                x1 = dd.io.load(fn)
+                fl.save(fn, x, compression=comp)
+                x1 = fl.load(fn)
                 assert (x == x1).all()
 
 if __name__ == '__main__':

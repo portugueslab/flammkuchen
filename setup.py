@@ -16,8 +16,6 @@ CLASSIFIERS = [
     'Intended Audience :: Science/Research',
     'License :: OSI Approved :: BSD License',
     'Programming Language :: Python',
-    'Programming Language :: Python :: 2',
-    'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.4',
     'Topic :: Scientific/Engineering',
@@ -25,8 +23,8 @@ CLASSIFIERS = [
 
 args = dict(
     name='flammkuchen',
-    version='0.3.4',
-    url="https://github.com/uchicago-cs/flammkuchen",
+    version='0.9',
+    url="https://github.com/portugueslab/flammkuchen",
     description="Deepdish fork for easy saving and loading of hdf5 files in python",
     maintainer='Luigi Petrucco, Vilim Stih @portugueslab',
     maintainer_email='luigi.petrucco@gmail.com',
@@ -34,12 +32,9 @@ args = dict(
     extras_require={
         'image': ["skimage"],
     },
-    scripts=['scripts/ddls'],
     packages=[
         'flammkuchen',
-        'flammkuchen.parallel',
         'flammkuchen.io',
-        'flammkuchen.util',
     ],
     license='BSD',
     classifiers=CLASSIFIERS,

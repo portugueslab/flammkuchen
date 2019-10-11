@@ -1,20 +1,18 @@
-from __future__ import print_function, division, absolute_import
-
 # Load the following modules by default
-from flammkuchen.core import (
-                   bytesize,
-                   humanize_bytesize,
-                   memsize,
-                   span,
-                   apply_once,
-                   tupled_argmax,
-                   multi_range,
-                   timed,
-                   aslice,
-                   )
-
-from flammkuchen import io
 from flammkuchen.conf import config
+try:
+    import tables
+    _pytables_ok = True
+    del tables
+except ImportError:
+    _pytables_ok = False
+
+if _pytables_ok:
+    from flammkuchen.hdf5io import load, save, ForcePickle, Compression
+else:
+    def _f():
+        raise ImportError("You need PyTables for this function")
+    load = save = _f
 
 
 class MovedPackage(object):
@@ -27,30 +25,25 @@ class MovedPackage(object):
             self.old_loc, self.new_loc))
 
 # This is temporary: remove after a few minor releases
-plot = MovedPackage('flammkuchen.plot', 'vzlog.image')
+__all__ = ['load', 'save', 'ForcePickle', 'Compression']
 
-__all__ = ['deepdish',
-           'set_verbose',
-           'info',
-           'warning',
-           'bytesize',
-           'humanize_bytesize',
-           'memsize',
-           'span',
-           'apply_once',
-           'tupled_argmax',
-           'multi_range',
-           'io',
-           'util',
-           'image',
-           'plot',
-           'parallel',
-           'config',
-           'timed',
-           'aslice',
-           ]
+#
+# __all__ = ['set_verbose',
+#            'info',
+#            'warning',
+#            'bytesize',
+#            'humanize_bytesize',
+#            'memsize',
+#            'span',
+#            'apply_once',
+#            'tupled_argmax',
+#            'multi_range',
+#            'config',
+#            'timed',
+#            'aslice',
+#            ]
 
-VERSION = (0, 3, 5)
+VERSION = (0, 9, 0)
 ISRELEASED = False
 __version__ = '{0}.{1}.{2}'.format(*VERSION)
 if not ISRELEASED:
