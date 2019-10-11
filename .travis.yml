@@ -1,9 +1,5 @@
 language: python
 python:
-    - "2.7"
-    - "3.3"
-    - "3.4"
-    - "3.5"
     - "3.6"
 install:
     - sudo apt-get update
@@ -18,7 +14,7 @@ install:
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
     - conda info -a
-    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pip numpy scipy scikit-image pytables pandas
+    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pip numpy scipy pytables pandas
     - source activate test-environment
     - pip install coverage
     - pip install nose

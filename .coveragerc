@@ -1,12 +1,10 @@
 [run]
 omit = 
-    deepdish/tests/*
-    deepdish/six.py
+    flammkuchen/tests/*
 
 [report]
 omit =
     */python?.?/*
     */site-packages/nose/*
     *__init__*
-    deepdish/tests/*
-    deepdish/six.py
+    flammkuchen/tests/*
