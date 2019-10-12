@@ -1,10 +1,7 @@
 from __future__ import division, print_function, absolute_import
 import os
 import sys
-if sys.version_info >= (3,):
-    from configparser import ConfigParser
-else:
-    from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
 
 def config():

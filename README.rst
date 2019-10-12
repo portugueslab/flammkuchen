@@ -1,15 +1,8 @@
-.. image:: https://readthedocs.org/projects/deepdish/badge/?version=latest
-    :target: https://readthedocs.org/projects/deepdish/?badge=latest
-    :alt: Documentation Status
-
 .. image:: https://travis-ci.org/uchicago-cs/deepdish.svg?branch=master
     :target: https://travis-ci.org/uchicago-cs/deepdish/
 
 .. image:: https://img.shields.io/pypi/v/deepdish.svg
     :target: https://pypi.python.org/pypi/deepdish
-
-.. image:: https://coveralls.io/repos/uchicago-cs/deepdish/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/uchicago-cs/deepdish?branch=master
    
 .. image:: https://img.shields.io/badge/license-BSD%203--Clause-blue.svg?style=flat
     :target: http://opensource.org/licenses/BSD-3-Clause 
