@@ -67,5 +67,5 @@ Or, better yet, our custom tool ``ddls`` (or ``python -m fl.ls``)::
     /sub/bar                   'a string' (8) [unicode]
     /sub/baz                   1.23 [float64]
 
-Read more at `Saving and loading data <https://github.com/portugueslab/flammkuchen/blob/master/io.rst`_.
+Read more at `Saving and loading data <https://github.com/portugueslab/flammkuchen/blob/master/io.rst`__.
 

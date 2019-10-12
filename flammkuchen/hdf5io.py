@@ -567,6 +567,8 @@ def save(path, data, compression='default'):
     --------
     load
     """
+    path = str(path)  # Allows for Path objects to be used
+
     filters = _get_compression_filters(compression)
 
     with tables.open_file(path, mode='w') as h5file:
@@ -631,6 +633,7 @@ def load(path, group=None, sel=None, unpack=False):
     save
 
     """
+    path = str(path)  # Allows for Path objects to be used
     with tables.open_file(path, mode='r') as h5file:
         pathtable = {}  # dict to keep track of objects already loaded
         if group is not None:
