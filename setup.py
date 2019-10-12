@@ -31,7 +31,6 @@ args = dict(
     install_requires=required,
     packages=[
         'flammkuchen',
-        'flammkuchen.io',
     ],
     license='BSD',
     classifiers=CLASSIFIERS,
