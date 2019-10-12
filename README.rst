@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/uchicago-cs/deepdish.svg?branch=master
-    :target: https://travis-ci.org/uchicago-cs/deepdish/
+.. image:: https://travis-ci.org/portugueslab/flammkuchen.svg?branch=master
+    :target: https://travis-ci.org/portugueslab/flammkuchen
 
 .. image:: https://img.shields.io/pypi/v/deepdish.svg
     :target: https://pypi.python.org/pypi/deepdish
