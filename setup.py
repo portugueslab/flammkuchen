@@ -17,7 +17,7 @@ CLASSIFIERS = [
     'License :: OSI Approved :: BSD License',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.6',
     'Topic :: Scientific/Engineering',
 ]
 
@@ -29,9 +29,6 @@ args = dict(
     maintainer='Luigi Petrucco, Vilim Stih @portugueslab',
     maintainer_email='luigi.petrucco@gmail.com',
     install_requires=required,
-    extras_require={
-        'image': ["skimage"],
-    },
     packages=[
         'flammkuchen',
         'flammkuchen.io',

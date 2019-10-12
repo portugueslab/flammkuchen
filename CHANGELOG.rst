@@ -1,5 +1,13 @@
-deepdish changelog
-==================
+flammkuchen changelog
+=====================
+
+0.9.0
+-----
+* restructured minimal i/o library from deepdish
+
+
+old deepdish changelog:
+-----------------------
 
 0.3.5
 ------

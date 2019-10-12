@@ -1,5 +1,3 @@
-.. _io:
-
 Saving and loading data
 =======================
 

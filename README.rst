@@ -14,10 +14,12 @@
 .. image:: https://img.shields.io/badge/license-BSD%203--Clause-blue.svg?style=flat
     :target: http://opensource.org/licenses/BSD-3-Clause 
 
-Flammkuchen
-========
 
-Flexible HDF5 saving/loading and other data science tools from the University of Chicago.
+Flammkuchen
+===========
+
+Library for flexible HDF5 saving/loading. It was forked from the `deepdish library <https://github.com/uchicago-cs/deepdish>`_  from the University of Chicago to maintain its convenient i/o module.
+
 
 Installation
 ------------
@@ -30,16 +32,16 @@ Installation
 
 Main feature
 ------------
-The primary feature of deepdish is its ability to save and load all kinds of
+The primary feature of flammkuchen (ex deepdish) is its ability to save and load all kinds of
 data as HDF5. It can save any Python data structure, offering the same ease of
-use as pickling or `numpy.save <http://docs.scipy.org/doc/numpy/reference/generated/numpy.save.html>`__. However, it improves by also offering:
+use as pickling or `numpy.save <http://docs.scipy.org/doc/numpy/reference/generated/numpy.save.html>`__.
+However, it improves by also offering:
 
 - Interoperability between languages (HDF5 is a popular standard)
 - Easy to inspect the content from the command line (using ``h5ls`` or our
   specialized tool ``ddls``)
 - Highly compressed storage (thanks to a PyTables backend)
-- Native support for scipy sparse matrices and pandas ``DataFrame``, ``Series``
-  and ``Panel``
+- Native support for scipy sparse matrices and pandas ``DataFrame`` and ``Series``
 - Ability to partially read files, even slices of arrays
 
 An example:
@@ -72,5 +74,5 @@ Or, better yet, our custom tool ``ddls`` (or ``python -m fl.ls``)::
     /sub/bar                   'a string' (8) [unicode]
     /sub/baz                   1.23 [float64]
 
-Read more at `Saving and loading data <http://deepdish.readthedocs.io/en/latest/io.html>`__.
+Read more at `Saving and loading data <https://github.com/portugueslab/flammkuchen/blob/master/io.rst`_.
 
