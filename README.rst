@@ -1,8 +1,8 @@
 .. image:: https://travis-ci.org/portugueslab/flammkuchen.svg?branch=master
     :target: https://travis-ci.org/portugueslab/flammkuchen
 
-.. image:: https://img.shields.io/pypi/v/deepdish.svg
-    :target: https://pypi.python.org/pypi/deepdish
+.. image:: https://img.shields.io/pypi/v/flammkuchen.svg
+    :target: https://pypi.python.org/pypi/flammkuchen
    
 .. image:: https://img.shields.io/badge/license-BSD%203--Clause-blue.svg?style=flat
     :target: http://opensource.org/licenses/BSD-3-Clause 
