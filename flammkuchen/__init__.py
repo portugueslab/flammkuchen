@@ -8,40 +8,14 @@ except ImportError:
     _pytables_ok = False
 
 if _pytables_ok:
-    from flammkuchen.hdf5io import load, save, ForcePickle, Compression
+    from flammkuchen.hdf5io import load, save, ForcePickle, Compression, aslice
 else:
     def _f():
         raise ImportError("You need PyTables for this function")
     load = save = _f
 
+__all__ = ['load', 'save', 'ForcePickle', 'Compression', 'aslice', 'config']
 
-class MovedPackage(object):
-    def __init__(self, old_loc, new_loc):
-        self.old_loc = old_loc
-        self.new_loc = new_loc
-
-    def __getattr__(self, name):
-        raise ImportError('The package {} has been moved to {}'.format(
-            self.old_loc, self.new_loc))
-
-# This is temporary: remove after a few minor releases
-__all__ = ['load', 'save', 'ForcePickle', 'Compression']
-
-#
-# __all__ = ['set_verbose',
-#            'info',
-#            'warning',
-#            'bytesize',
-#            'humanize_bytesize',
-#            'memsize',
-#            'span',
-#            'apply_once',
-#            'tupled_argmax',
-#            'multi_range',
-#            'config',
-#            'timed',
-#            'aslice',
-#            ]
 
 VERSION = (0, 9, 0)
 ISRELEASED = False
