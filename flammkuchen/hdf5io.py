@@ -505,13 +505,16 @@ def meta(path, node=None):
     Returns the content of a given file as a multidimensional dictionary.
     It is a lazy function for the ``ls.get_tree`` command and is easier
     to use upfront.
+
+    The node parameter can be easily used to track down a specific subnode.
+    Similar to ``load``, one would use ``/foo/bar`` to access deeper nodes.
     
     Parameters
     ----------
     path : string
         Filename which metadata is read
     node : string, optional
-        A node inside of the file, by default None
+        A node inside of the file similar to ``load``, by default None
     
     Returns
     -------
