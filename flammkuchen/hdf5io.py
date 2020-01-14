@@ -3,6 +3,7 @@ import tables
 import warnings
 from scipy import sparse
 from flammkuchen import conf
+
 try:
     import pandas as pd
     pd.io.pytables._tables()
@@ -499,6 +500,56 @@ def _load_sliced_level(handler, level, sel):
     else:
         raise ValueError('Cannot partially load this data type using `sel`')
 
+def meta(path, node=None):
+    """
+    Returns the content of a given file as a multidimensional dictionary.
+    It is a lazy function for the ``ls.get_tree`` command and is easier
+    to use upfront.
+    
+    Parameters
+    ----------
+    path : string
+        Filename which metadata is read
+    node : string, optional
+        A node inside of the file, by default None
+    
+    Returns
+    -------
+    dict or node
+        The metadata associated with a file, depending if the ``node`` 
+        command was passed or not.
+    """
+    path = str(path)  # Allows for Path objects to be used
+
+    from flammkuchen.ls import get_tree, DictNode
+
+    main_node = get_tree(path)
+    
+    if node is None:
+        return main_node.children
+
+    else:
+        nodes = node.split("/")
+        tmp_node = main_node.children
+
+        for subnode in nodes:
+            # If there's an empty subnode, just skip
+            if subnode == '':
+                continue 
+
+            # Check if subnode is available
+            if subnode in tmp_node.keys():
+                tmp_node = tmp_node[subnode]
+
+                # If it is a DictNode, not a dict,
+                # go to its children
+                if type(tmp_node) == DictNode:
+                    tmp_node = tmp_node.children
+
+            else:
+                raise Exception("Node {} not available!".format(subnode))
+
+        return tmp_node
 
 def save(path, data, compression='default'):
     """

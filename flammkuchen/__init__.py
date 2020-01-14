@@ -8,13 +8,13 @@ except ImportError:
     _pytables_ok = False
 
 if _pytables_ok:
-    from flammkuchen.hdf5io import load, save, ForcePickle, Compression, aslice
+    from flammkuchen.hdf5io import load, save, ForcePickle, Compression, aslice, meta
 else:
     def _f():
         raise ImportError("You need PyTables for this function")
     load = save = _f
 
-__all__ = ['load', 'save', 'ForcePickle', 'Compression', 'aslice', 'config']
+__all__ = ['load', 'save', 'ForcePickle', 'Compression', 'aslice', 'config', 'meta']
 
 
 VERSION = (0, 9, 0)
