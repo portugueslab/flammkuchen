@@ -70,6 +70,8 @@ Or, better yet, our custom tool ``ddls`` (or ``python -m fl.ls``)::
 Further, one can use the metadata dynamically in a python script to load
 a subset of data with an unknown shape:
 
+.. code:: python
+
     import flammkuchen as fl
 
     foo_shape = fl.meta("test.h5", "/foo").foo_shape
