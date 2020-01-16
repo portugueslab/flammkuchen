@@ -67,5 +67,20 @@ Or, better yet, our custom tool ``ddls`` (or ``python -m fl.ls``)::
     /sub/bar                   'a string' (8) [unicode]
     /sub/baz                   1.23 [float64]
 
+Further, one can use the metadata dynamically in a python script to load
+a subset of data with an unknown shape:
+
+.. code:: python
+
+    import flammkuchen as fl
+
+    foo_shape = fl.meta("test.h5", "/foo").foo_shape
+    # (10, 20)
+
+    for i in range(foo_shape[0]):
+        a_tiny_slice = fl.load("test.h5", "/foo", sel=fl.aslice[i, :])
+        print(a_tiny_slice.shape)
+        # (20, ) 
+
 Read more at `Saving and loading data <https://github.com/portugueslab/flammkuchen/blob/master/io.rst`__.
 
