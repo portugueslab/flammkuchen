@@ -74,7 +74,7 @@ a subset of data with an unknown shape:
 
     import flammkuchen as fl
 
-    foo_shape = fl.meta("test.h5", "/foo").foo_shape
+    foo_shape = fl.meta("test.h5", "/foo").shape
     # (10, 20)
 
     for i in range(foo_shape[0]):
