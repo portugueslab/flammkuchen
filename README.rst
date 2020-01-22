@@ -11,7 +11,8 @@
 Flammkuchen
 ===========
 
-Library for flexible HDF5 saving/loading. It was forked from the `deepdish library <https://github.com/uchicago-cs/deepdish>`_  from the University of Chicago to maintain its convenient i/o module.
+Library for flexible HDF5 saving/loading. It was forked from the `deepdish library <https://github.com/uchicago-cs/deepdish>`_
+from the University of Chicago to maintain its convenient i/o module.
 
 
 Installation
@@ -82,5 +83,5 @@ a subset of data with an unknown shape:
         print(a_tiny_slice.shape)
         # (20, ) 
 
-Read more at `Saving and loading data <https://github.com/portugueslab/flammkuchen/blob/master/io.rst`__.
+Read more at `Saving and loading data <https://github.com/portugueslab/flammkuchen/blob/master/io.rst>`__.
 
