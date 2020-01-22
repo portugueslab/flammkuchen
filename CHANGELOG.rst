@@ -1,9 +1,13 @@
 flammkuchen changelog
 =====================
 
+0.9.2
+-----
+* Added meta function to load a subset of data with an unknown shape
+
 0.9.0
 -----
-* restructured minimal i/o library from deepdish
+* Restructured minimal i/o library from deepdish
 
 
 old deepdish changelog:
