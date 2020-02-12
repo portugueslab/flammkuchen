@@ -221,7 +221,7 @@ def _save_level(handler, group, level, name=None, filters=None, idtable=None):
                 _save_level(handler, new_group, v, name=k, filters=filters,
                             idtable=idtable)
 
-    elif isinstance(level, list) and len(level) < 256:
+    elif isinstance(level, list):
         # Lists can contain other dictionaries and numpy arrays, so we don't
         # want to serialize them. Instead, we will store each entry as i0, i1,
         # etc.
@@ -233,7 +233,7 @@ def _save_level(handler, group, level, name=None, filters=None, idtable=None):
             _save_level(handler, new_group, entry,
                         name=level_name, filters=filters, idtable=idtable)
 
-    elif isinstance(level, tuple) and len(level) < 256:
+    elif isinstance(level, tuple):
         # Lists can contain other dictionaries and numpy arrays, so we don't
         # want to serialize them. Instead, we will store each entry as i0, i1,
         # etc.
@@ -508,18 +508,18 @@ def meta(path, node=None):
 
     The node parameter can be easily used to track down a specific subnode.
     Similar to ``load``, one would use ``/foo/bar`` to access deeper nodes.
-    
+
     Parameters
     ----------
     path : string
         Filename which metadata is read
     node : string, optional
         A node inside of the file similar to ``load``, by default None
-    
+
     Returns
     -------
     dict or node
-        The metadata associated with a file, depending if the ``node`` 
+        The metadata associated with a file, depending if the ``node``
         command was passed or not.
     """
     path = str(path)  # Allows for Path objects to be used
@@ -527,7 +527,7 @@ def meta(path, node=None):
     from flammkuchen.ls import get_tree, DictNode
 
     main_node = get_tree(path)
-    
+
     if node is None:
         return main_node.children
 
@@ -538,7 +538,7 @@ def meta(path, node=None):
         for subnode in nodes:
             # If there's an empty subnode, just skip
             if subnode == '':
-                continue 
+                continue
 
             # Check if subnode is available
             if subnode in tmp_node.keys():
