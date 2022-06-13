@@ -1,6 +1,6 @@
-from __future__ import division, print_function, absolute_import
+from __future__ import absolute_import, division, print_function
+
 import os
-import sys
 from configparser import ConfigParser
 
 
@@ -10,8 +10,8 @@ def config():
     """
     conf = ConfigParser()
     # Set up defaults
-    conf.add_section('io')
-    conf.set('io', 'compression', 'zlib')
+    conf.add_section("io")
+    conf.set("io", "compression", "zlib")
 
-    conf.read(os.path.expanduser('~/.flammkuchen.conf'))
+    conf.read(os.path.expanduser("~/.flammkuchen.conf"))
     return conf

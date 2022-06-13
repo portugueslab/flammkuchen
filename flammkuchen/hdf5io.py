@@ -1,11 +1,14 @@
+import warnings
+
 import numpy as np
 import tables
-import warnings
 from scipy import sparse
+
 from flammkuchen import conf
 
 try:
     import pandas as pd
+
     pd.io.pytables._tables()
     _pandas = True
 except ImportError:
@@ -13,24 +16,43 @@ except ImportError:
 
 try:
     from types import SimpleNamespace
+
     _sns = True
 except ImportError:
     _sns = False
 
 
 IO_VERSION = 12
-DEEPDISH_IO_PREFIX = 'DEEPDISH_IO'
-DEEPDISH_IO_VERSION_STR = DEEPDISH_IO_PREFIX + '_VERSION'
-DEEPDISH_IO_UNPACK = DEEPDISH_IO_PREFIX + '_DEEPDISH_IO_UNPACK'
-DEEPDISH_IO_ROOT_IS_SNS = DEEPDISH_IO_PREFIX + '_ROOT_IS_SNS'
+IO_PREFIX = "DEEPDISH_IO"
+IO_VERSION_STR = IO_PREFIX + "_VERSION"
+IO_UNPACK = IO_PREFIX + "_DEEPDISH_IO_UNPACK"
+IO_ROOT_IS_SNS = IO_PREFIX + "_ROOT_IS_SNS"
 
 # Types that should be saved as pytables attribute
-ATTR_TYPES = (int, float, bool, str, bytes,
-              np.int8, np.int16, np.int32, np.int64, np.uint8,
-              np.uint16, np.uint32, np.uint64, np.float16, np.float32,
-              np.float64, np.bool_, np.complex64, np.complex128)
+ATTR_TYPES = (
+    int,
+    float,
+    bool,
+    str,
+    bytes,
+    np.int8,
+    np.int16,
+    np.int32,
+    np.int64,
+    np.uint8,
+    np.uint16,
+    np.uint32,
+    np.uint64,
+    np.float16,
+    np.float32,
+    np.float64,
+    np.bool_,
+    np.complex64,
+    np.complex128,
+)
 
 if _pandas:
+
     class _HDFStoreWithHandle(pd.io.pytables.HDFStore):
         def __init__(self, handle):
             self._path = None
@@ -43,9 +65,7 @@ if _pandas:
 
 
 def is_pandas_dataframe(level):
-    return ('pandas_version' in level._v_attrs and
-            'pandas_type' in level._v_attrs)
-
+    return "pandas_version" in level._v_attrs and "pandas_type" in level._v_attrs
 
 
 class ForcePickle(object):
@@ -54,6 +74,7 @@ class ForcePickle(object):
     class to force them to be pickled. They will automatically be unpacked at
     load time.
     """
+
     def __init__(self, obj):
         self.obj = obj
 
@@ -62,7 +83,8 @@ class Compression(object):
     """
     Class to enable explicit compression settings for individual arrays.
     """
-    def __init__(self, obj, compression='default'):
+
+    def __init__(self, obj, compression="default"):
         self.obj = obj
         self.compression = compression
 
@@ -84,15 +106,19 @@ def _dict_native_ok(d):
     return True
 
 
-def _get_compression_filters(compression='default'):
-    if compression == 'default':
+def _get_compression_filters(compression="default"):
+    if compression == "default":
         config = conf.config()
-        compression = config.get('io', 'compression')
+        compression = config.get("io", "compression")
     elif compression is True:
-        compression = 'zlib'
+        compression = "zlib"
 
-    if (compression is False or compression is None or
-            compression == 'none' or compression == 'None'):
+    if (
+        compression is False
+        or compression is None
+        or compression == "none"
+        or compression == "None"
+    ):
         ff = None
     else:
         if isinstance(compression, (tuple, list)):
@@ -101,11 +127,14 @@ def _get_compression_filters(compression='default'):
             level = 9
 
         try:
-            ff = tables.Filters(complevel=level, complib=compression,
-                                shuffle=True)
+            ff = tables.Filters(complevel=level, complib=compression, shuffle=True)
         except Exception:
-            warnings.warn(("(flammkuchen.save) Missing compression method {}: "
-                           "no compression will be used.").format(compression))
+            warnings.warn(
+                (
+                    "(flammkuchen.save) Missing compression method {}: "
+                    "no compression will be used."
+                ).format(compression)
+            )
             ff = None
     return ff
 
@@ -113,12 +142,12 @@ def _get_compression_filters(compression='default'):
 def _save_ndarray(handler, group, name, x, filters=None):
     if np.issubdtype(x.dtype, np.unicode_):
         # Convert unicode strings to pure byte arrays
-        strtype = b'unicode'
+        strtype = b"unicode"
         itemsize = x.itemsize // 4
         atom = tables.UInt8Atom()
         x = x.view(dtype=np.uint8)
     elif np.issubdtype(x.dtype, np.string_):
-        strtype = b'ascii'
+        strtype = b"ascii"
         itemsize = x.itemsize
         atom = tables.StringAtom(itemsize)
     elif x.dtype == np.object:
@@ -133,9 +162,8 @@ def _save_ndarray(handler, group, name, x, filters=None):
     if x.ndim > 0 and np.min(x.shape) == 0:
         sh = np.array(x.shape)
         atom0 = tables.Atom.from_dtype(np.dtype(np.int64))
-        node = handler.create_array(group, name, atom=atom0,
-                                    shape=(sh.size,))
-        node._v_attrs.zeroarray_dtype = np.dtype(x.dtype).str.encode('ascii')
+        node = handler.create_array(group, name, atom=atom0, shape=(sh.size,))
+        node._v_attrs.zeroarray_dtype = np.dtype(x.dtype).str.encode("ascii")
         node[:] = sh
         return
 
@@ -150,13 +178,11 @@ def _save_ndarray(handler, group, name, x, filters=None):
     # settings a threshold here. The threshold has been set through
     # experimentation.
     if filters is not None and x.size > 300:
-        node = handler.create_carray(group, name, atom=atom,
-                                     shape=x.shape,
-                                     chunkshape=None,
-                                     filters=filters)
+        node = handler.create_carray(
+            group, name, atom=atom, shape=x.shape, chunkshape=None, filters=filters
+        )
     else:
-        node = handler.create_array(group, name, atom=atom,
-                                    shape=x.shape)
+        node = handler.create_array(group, name, atom=atom, shape=x.shape)
     if strtype is not None:
         node._v_attrs.strtype = strtype
         node._v_attrs.itemsize = itemsize
@@ -164,10 +190,14 @@ def _save_ndarray(handler, group, name, x, filters=None):
 
 
 def _save_pickled(handler, group, level, name=None):
-    warnings.warn(('(flammkuchen.save) Pickling {}: This may cause '
-                   'incompatibities (for instance between Python 2 and '
-                   '3) and should ideally be avoided').format(level),
-                  DeprecationWarning)
+    warnings.warn(
+        (
+            "(flammkuchen.save) Pickling {}: This may cause "
+            "incompatibities (for instance between Python 2 and "
+            "3) and should ideally be avoided"
+        ).format(level),
+        DeprecationWarning,
+    )
     node = handler.create_vlarray(group, name, tables.ObjectAtom())
     node.append(level)
 
@@ -185,10 +215,10 @@ def _save_level(handler, group, level, name=None, filters=None, idtable=None):
     except KeyError:
         if _is_linkable(level):
             # store path to object:
-            if group._v_pathname.endswith('/'):
-                idtable[_id] = '{}{}'.format(group._v_pathname, name)
+            if group._v_pathname.endswith("/"):
+                idtable[_id] = "{}{}".format(group._v_pathname, name)
             else:
-                idtable[_id] = '{}/{}'.format(group._v_pathname, name)
+                idtable[_id] = "{}/{}".format(group._v_pathname, name)
     else:
         # object already saved, so create soft link to it:
         handler.create_soft_link(group, name, target=oldpath)
@@ -196,100 +226,114 @@ def _save_level(handler, group, level, name=None, filters=None, idtable=None):
 
     if isinstance(level, Compression):
         custom_filters = _get_compression_filters(level.compression)
-        return _save_level(handler, group, level.obj, name=name,
-                           filters=custom_filters, idtable=idtable)
+        return _save_level(
+            handler,
+            group,
+            level.obj,
+            name=name,
+            filters=custom_filters,
+            idtable=idtable,
+        )
 
     elif isinstance(level, ForcePickle):
         _save_pickled(handler, group, level, name=name)
 
     elif isinstance(level, dict) and _dict_native_ok(level):
         # First create a new group
-        new_group = handler.create_group(group, name,
-                                         "dict:{}".format(len(level)))
+        new_group = handler.create_group(group, name, "dict:{}".format(len(level)))
         for k, v in level.items():
             if isinstance(k, str):
-                _save_level(handler, new_group, v, name=k, filters=filters,
-                            idtable=idtable)
+                _save_level(
+                    handler, new_group, v, name=k, filters=filters, idtable=idtable
+                )
 
-    elif (_sns and isinstance(level, SimpleNamespace) and
-          _dict_native_ok(level.__dict__)):
+    elif (
+        _sns and isinstance(level, SimpleNamespace) and _dict_native_ok(level.__dict__)
+    ):
         # Create a new group in same manner as for dict
         new_group = handler.create_group(
-            group, name, "SimpleNamespace:{}".format(len(level.__dict__)))
+            group, name, "SimpleNamespace:{}".format(len(level.__dict__))
+        )
         for k, v in level.__dict__.items():
             if isinstance(k, str):
-                _save_level(handler, new_group, v, name=k, filters=filters,
-                            idtable=idtable)
+                _save_level(
+                    handler, new_group, v, name=k, filters=filters, idtable=idtable
+                )
 
     elif isinstance(level, list):
         # Lists can contain other dictionaries and numpy arrays, so we don't
         # want to serialize them. Instead, we will store each entry as i0, i1,
         # etc.
-        new_group = handler.create_group(group, name,
-                                         "list:{}".format(len(level)))
+        new_group = handler.create_group(group, name, "list:{}".format(len(level)))
 
         for i, entry in enumerate(level):
-            level_name = 'i{}'.format(i)
-            _save_level(handler, new_group, entry,
-                        name=level_name, filters=filters, idtable=idtable)
+            level_name = "i{}".format(i)
+            _save_level(
+                handler,
+                new_group,
+                entry,
+                name=level_name,
+                filters=filters,
+                idtable=idtable,
+            )
 
     elif isinstance(level, tuple):
         # Lists can contain other dictionaries and numpy arrays, so we don't
         # want to serialize them. Instead, we will store each entry as i0, i1,
         # etc.
-        new_group = handler.create_group(group, name,
-                                         "tuple:{}".format(len(level)))
+        new_group = handler.create_group(group, name, "tuple:{}".format(len(level)))
 
         for i, entry in enumerate(level):
-            level_name = 'i{}'.format(i)
-            _save_level(handler, new_group, entry, name=level_name,
-                        filters=filters, idtable=idtable)
+            level_name = "i{}".format(i)
+            _save_level(
+                handler,
+                new_group,
+                entry,
+                name=level_name,
+                filters=filters,
+                idtable=idtable,
+            )
 
     elif isinstance(level, np.ndarray):
         _save_ndarray(handler, group, name, level, filters=filters)
 
     elif _pandas and isinstance(level, (pd.DataFrame, pd.Series)):
         store = _HDFStoreWithHandle(handler)
-        store.put(group._v_pathname + '/' + name, level)
+        store.put(group._v_pathname + "/" + name, level)
 
-    elif isinstance(level, (sparse.dok_matrix,
-                            sparse.lil_matrix)):
+    elif isinstance(level, (sparse.dok_matrix, sparse.lil_matrix)):
         raise NotImplementedError(
-            'flammkuchen.save does not support DOK or LIL matrices; '
-            'please convert before saving to one of the following supported '
-            'types: BSR, COO, CSR, CSC, DIA')
+            "flammkuchen.save does not support DOK or LIL matrices; "
+            "please convert before saving to one of the following supported "
+            "types: BSR, COO, CSR, CSC, DIA"
+        )
 
-    elif isinstance(level, (sparse.csr_matrix,
-                            sparse.csc_matrix,
-                            sparse.bsr_matrix)):
+    elif isinstance(level, (sparse.csr_matrix, sparse.csc_matrix, sparse.bsr_matrix)):
         new_group = handler.create_group(group, name, "sparse:")
 
-        _save_ndarray(handler, new_group, 'data', level.data, filters=filters)
-        _save_ndarray(handler, new_group, 'indices', level.indices,
-                      filters=filters)
-        _save_ndarray(handler, new_group, 'indptr', level.indptr,
-                      filters=filters)
-        _save_ndarray(handler, new_group, 'shape', np.asarray(level.shape))
+        _save_ndarray(handler, new_group, "data", level.data, filters=filters)
+        _save_ndarray(handler, new_group, "indices", level.indices, filters=filters)
+        _save_ndarray(handler, new_group, "indptr", level.indptr, filters=filters)
+        _save_ndarray(handler, new_group, "shape", np.asarray(level.shape))
         new_group._v_attrs.format = level.format
         new_group._v_attrs.maxprint = level.maxprint
 
     elif isinstance(level, sparse.dia_matrix):
         new_group = handler.create_group(group, name, "sparse:")
 
-        _save_ndarray(handler, new_group, 'data', level.data, filters=filters)
-        _save_ndarray(handler, new_group, 'offsets', level.offsets,
-                      filters=filters)
-        _save_ndarray(handler, new_group, 'shape', np.asarray(level.shape))
+        _save_ndarray(handler, new_group, "data", level.data, filters=filters)
+        _save_ndarray(handler, new_group, "offsets", level.offsets, filters=filters)
+        _save_ndarray(handler, new_group, "shape", np.asarray(level.shape))
         new_group._v_attrs.format = level.format
         new_group._v_attrs.maxprint = level.maxprint
 
     elif isinstance(level, sparse.coo_matrix):
         new_group = handler.create_group(group, name, "sparse:")
 
-        _save_ndarray(handler, new_group, 'data', level.data, filters=filters)
-        _save_ndarray(handler, new_group, 'col', level.col, filters=filters)
-        _save_ndarray(handler, new_group, 'row', level.row, filters=filters)
-        _save_ndarray(handler, new_group, 'shape', np.asarray(level.shape))
+        _save_ndarray(handler, new_group, "data", level.data, filters=filters)
+        _save_ndarray(handler, new_group, "col", level.col, filters=filters)
+        _save_ndarray(handler, new_group, "row", level.row, filters=filters)
+        _save_ndarray(handler, new_group, "shape", np.asarray(level.shape))
         new_group._v_attrs.format = level.format
         new_group._v_attrs.maxprint = level.maxprint
 
@@ -305,36 +349,38 @@ def _save_level(handler, group, level, name=None, filters=None, idtable=None):
 
 
 def _load_specific_level(handler, grp, path, sel=None, pathtable=None):
-    if path == '':
+    if path == "":
         if sel is not None:
             return _load_sliced_level(handler, grp, sel)
         else:
             return _load_level(handler, grp, pathtable)
-    vv = path.split('/', 1)
+    vv = path.split("/", 1)
     if len(vv) == 1:
         if hasattr(grp, vv[0]):
             if sel is not None:
                 return _load_sliced_level(handler, getattr(grp, vv[0]), sel)
             else:
                 return _load_level(handler, getattr(grp, vv[0]), pathtable)
-        elif hasattr(grp, '_v_attrs') and vv[0] in grp._v_attrs:
+        elif hasattr(grp, "_v_attrs") and vv[0] in grp._v_attrs:
             if sel is not None:
                 raise ValueError("Cannot slice this type")
             v = grp._v_attrs[vv[0]]
             if isinstance(v, np.string_):
-                v = v.decode('utf-8')
+                v = v.decode("utf-8")
             return v
         else:
             raise ValueError('Undefined entry "{}"'.format(vv[0]))
     else:
         level, rest = vv
-        if level == '':
-            return _load_specific_level(handler, grp.root, rest, sel=sel,
-                                        pathtable=pathtable)
+        if level == "":
+            return _load_specific_level(
+                handler, grp.root, rest, sel=sel, pathtable=pathtable
+            )
         else:
             if hasattr(grp, level):
-                return _load_specific_level(handler, getattr(grp, level),
-                                            rest, sel=sel, pathtable=pathtable)
+                return _load_specific_level(
+                    handler, getattr(grp, level), rest, sel=sel, pathtable=pathtable
+                )
             else:
                 raise ValueError('Undefined group "{}"'.format(level))
 
@@ -351,11 +397,13 @@ def _load_nonlink_level(handler, level, pathtable, pathname):
     Loads level and builds appropriate type, without handling softlinks
     """
     if isinstance(level, tables.Group):
-        if _sns and (level._v_title.startswith('SimpleNamespace:') or
-                     DEEPDISH_IO_ROOT_IS_SNS in level._v_attrs):
+        if _sns and (
+            level._v_title.startswith("SimpleNamespace:")
+            or IO_ROOT_IS_SNS in level._v_attrs
+        ):
             val = SimpleNamespace()
             dct = val.__dict__
-        elif level._v_title.startswith('list:'):
+        elif level._v_title.startswith("list:"):
             dct = {}
             val = []
         else:
@@ -370,56 +418,58 @@ def _load_nonlink_level(handler, level, pathtable, pathname):
             lev = _load_level(handler, grp, pathtable)
             n = grp._v_name
             # Check if it's a complicated pair or a string-value pair
-            if n.startswith('__pair'):
-                dct[lev['key']] = lev['value']
+            if n.startswith("__pair"):
+                dct[lev["key"]] = lev["value"]
             else:
                 dct[n] = lev
 
         # Load attributes
         for name in level._v_attrs._f_list():
-            if name.startswith(DEEPDISH_IO_PREFIX):
+            if name.startswith(IO_PREFIX):
                 continue
             v = level._v_attrs[name]
             dct[name] = v
 
-        if level._v_title.startswith('list:'):
-            N = int(level._v_title[len('list:'):])
+        if level._v_title.startswith("list:"):
+            N = int(level._v_title[len("list:") :])
             for i in range(N):
-                val.append(dct['i{}'.format(i)])
+                val.append(dct["i{}".format(i)])
             return val
-        elif level._v_title.startswith('tuple:'):
-            N = int(level._v_title[len('tuple:'):])
+        elif level._v_title.startswith("tuple:"):
+            N = int(level._v_title[len("tuple:") :])
             lst = []
             for i in range(N):
-                lst.append(dct['i{}'.format(i)])
+                lst.append(dct["i{}".format(i)])
             return tuple(lst)
-        elif level._v_title.startswith('nonetype:'):
+        elif level._v_title.startswith("nonetype:"):
             return None
         elif is_pandas_dataframe(level):
             assert _pandas, "pandas is required to read this file"
             store = _HDFStoreWithHandle(handler)
             return store.get(level._v_pathname)
-        elif level._v_title.startswith('sparse:'):
+        elif level._v_title.startswith("sparse:"):
             frm = level._v_attrs.format
-            if frm in ('csr', 'csc', 'bsr'):
+            if frm in ("csr", "csc", "bsr"):
                 shape = tuple(level.shape[:])
-                cls = {'csr': sparse.csr_matrix,
-                       'csc': sparse.csc_matrix,
-                       'bsr': sparse.bsr_matrix}
+                cls = {
+                    "csr": sparse.csr_matrix,
+                    "csc": sparse.csc_matrix,
+                    "bsr": sparse.bsr_matrix,
+                }
                 matrix = cls[frm](shape)
                 matrix.data = level.data[:]
                 matrix.indices = level.indices[:]
                 matrix.indptr = level.indptr[:]
                 matrix.maxprint = level._v_attrs.maxprint
                 return matrix
-            elif frm == 'dia':
+            elif frm == "dia":
                 shape = tuple(level.shape[:])
                 matrix = sparse.dia_matrix(shape)
                 matrix.data = level.data[:]
                 matrix.offsets = level.offsets[:]
                 matrix.maxprint = level._v_attrs.maxprint
                 return matrix
-            elif frm == 'coo':
+            elif frm == "coo":
                 shape = tuple(level.shape[:])
                 matrix = sparse.coo_matrix(shape)
                 matrix.data = level.data[:]
@@ -428,7 +478,7 @@ def _load_nonlink_level(handler, level, pathtable, pathname):
                 matrix.maxprint = level._v_attrs.maxprint
                 return matrix
             else:
-                raise ValueError('Unknown sparse matrix type: {}'.format(frm))
+                raise ValueError("Unknown sparse matrix type: {}".format(frm))
         else:
             return val
 
@@ -439,19 +489,19 @@ def _load_nonlink_level(handler, level, pathtable, pathname):
             return level[:]
 
     elif isinstance(level, tables.Array):
-        if 'zeroarray_dtype' in level._v_attrs:
+        if "zeroarray_dtype" in level._v_attrs:
             # Unpack zero-size arrays (shape is stored in an HDF5 array and
             # type is stored in the attibute 'zeroarray_dtype')
             dtype = level._v_attrs.zeroarray_dtype
             sh = level[:]
             return np.zeros(tuple(sh), dtype=dtype)
 
-        if 'strtype' in level._v_attrs:
+        if "strtype" in level._v_attrs:
             strtype = level._v_attrs.strtype
             itemsize = level._v_attrs.itemsize
-            if strtype == b'unicode':
+            if strtype == b"unicode":
                 return level[:].view(dtype=(np.unicode_, itemsize))
-            elif strtype == b'ascii':
+            elif strtype == b"ascii":
                 return level[:].view(dtype=(np.string_, itemsize))
         # This serves two purposes:
         # (1) unpack big integers: the only time we save arrays like this
@@ -478,8 +528,7 @@ def _load_level(handler, level, pathtable):
     try:
         return pathtable[pathname]
     except KeyError:
-        pathtable[pathname] = _load_nonlink_level(handler, node, pathtable,
-                                                  pathname)
+        pathtable[pathname] = _load_nonlink_level(handler, node, pathtable, pathname)
         return pathtable[pathname]
 
 
@@ -498,7 +547,8 @@ def _load_sliced_level(handler, level, sel):
         return level[sel]
 
     else:
-        raise ValueError('Cannot partially load this data type using `sel`')
+        raise ValueError("Cannot partially load this data type using `sel`")
+
 
 def meta(path, node=None):
     """
@@ -524,7 +574,7 @@ def meta(path, node=None):
     """
     path = str(path)  # Allows for Path objects to be used
 
-    from flammkuchen.ls import get_tree, DictNode
+    from flammkuchen.ls import DictNode, get_tree
 
     main_node = get_tree(path)
 
@@ -537,7 +587,7 @@ def meta(path, node=None):
 
         for subnode in nodes:
             # If there's an empty subnode, just skip
-            if subnode == '':
+            if subnode == "":
                 continue
 
             # Check if subnode is available
@@ -554,7 +604,8 @@ def meta(path, node=None):
 
         return tmp_node
 
-def save(path, data, compression='default'):
+
+def save(path, data, compression="default"):
     """
     Save any Python structure to an HDF5 file. It is particularly suited for
     Numpy arrays. This function works similar to ``numpy.save``, except if you
@@ -625,32 +676,38 @@ def save(path, data, compression='default'):
 
     filters = _get_compression_filters(compression)
 
-    with tables.open_file(path, mode='w') as h5file:
+    with tables.open_file(path, mode="w") as h5file:
         # If the data is a dictionary, put it flatly in the root
         group = h5file.root
-        group._v_attrs[DEEPDISH_IO_VERSION_STR] = IO_VERSION
+        group._v_attrs[IO_VERSION_STR] = IO_VERSION
         idtable = {}  # dict to keep track of objects already saved
         # Sparse matrices match isinstance(data, dict), so we'll have to be
         # more strict with the type checking
-        if type(data) == type({}) and _dict_native_ok(data):
-            idtable[id(data)] = '/'
+        if isinstance(data, dict) and _dict_native_ok(data):
+            idtable[id(data)] = "/"
             for key, value in data.items():
-                _save_level(h5file, group, value, name=key,
-                            filters=filters, idtable=idtable)
+                _save_level(
+                    h5file, group, value, name=key, filters=filters, idtable=idtable
+                )
 
-        elif (_sns and isinstance(data, SimpleNamespace) and
-              _dict_native_ok(data.__dict__)):
-            idtable[id(data)] = '/'
-            group._v_attrs[DEEPDISH_IO_ROOT_IS_SNS] = True
+        elif (
+            _sns
+            and isinstance(data, SimpleNamespace)
+            and _dict_native_ok(data.__dict__)
+        ):
+            idtable[id(data)] = "/"
+            group._v_attrs[IO_ROOT_IS_SNS] = True
             for key, value in data.__dict__.items():
-                _save_level(h5file, group, value, name=key,
-                            filters=filters, idtable=idtable)
+                _save_level(
+                    h5file, group, value, name=key, filters=filters, idtable=idtable
+                )
 
         else:
-            _save_level(h5file, group, data, name='data',
-                        filters=filters, idtable=idtable)
+            _save_level(
+                h5file, group, data, name="data", filters=filters, idtable=idtable
+            )
             # Mark this to automatically unpack when loaded
-            group._v_attrs[DEEPDISH_IO_UNPACK] = True
+            group._v_attrs[IO_UNPACK] = True
 
 
 def load(path, group=None, sel=None, unpack=False):
@@ -688,44 +745,49 @@ def load(path, group=None, sel=None, unpack=False):
 
     """
     path = str(path)  # Allows for Path objects to be used
-    with tables.open_file(path, mode='r') as h5file:
+    with tables.open_file(path, mode="r") as h5file:
         pathtable = {}  # dict to keep track of objects already loaded
         if group is not None:
             if isinstance(group, str):
-                data = _load_specific_level(h5file, h5file, group, sel=sel,
-                                            pathtable=pathtable)
+                data = _load_specific_level(
+                    h5file, h5file, group, sel=sel, pathtable=pathtable
+                )
             else:  # Assume group is a list or tuple
                 data = []
                 for g in group:
-                    data_i = _load_specific_level(h5file, h5file, g, sel=sel,
-                                                  pathtable=pathtable)
+                    data_i = _load_specific_level(
+                        h5file, h5file, g, sel=sel, pathtable=pathtable
+                    )
                     data.append(data_i)
                 data = tuple(data)
         else:
             grp = h5file.root
-            auto_unpack = (DEEPDISH_IO_UNPACK in grp._v_attrs and
-                           grp._v_attrs[DEEPDISH_IO_UNPACK])
+            auto_unpack = IO_UNPACK in grp._v_attrs and grp._v_attrs[IO_UNPACK]
             do_unpack = unpack or auto_unpack
             if do_unpack and len(grp._v_children) == 1:
                 name = next(iter(grp._v_children))
-                data = _load_specific_level(h5file, grp, name, sel=sel,
-                                            pathtable=pathtable)
+                data = _load_specific_level(
+                    h5file, grp, name, sel=sel, pathtable=pathtable
+                )
                 do_unpack = False
             elif sel is not None:
-                raise ValueError("Must specify group with `sel` unless it "
-                                 "automatically unpacks")
+                raise ValueError(
+                    "Must specify group with `sel` unless it " "automatically unpacks"
+                )
             else:
                 data = _load_level(h5file, grp, pathtable)
 
-            if DEEPDISH_IO_VERSION_STR in grp._v_attrs:
-                v = grp._v_attrs[DEEPDISH_IO_VERSION_STR]
+            if IO_VERSION_STR in grp._v_attrs:
+                v = grp._v_attrs[IO_VERSION_STR]
             else:
                 v = 0
 
             if v > IO_VERSION:
-                warnings.warn('This file was saved with a newer version of '
-                              'flammkuchen. Please upgrade to make sure it loads '
-                              'correctly.')
+                warnings.warn(
+                    "This file was saved with a newer version of "
+                    "flammkuchen. Please upgrade to make sure it loads "
+                    "correctly."
+                )
 
             # Attributes can't be unpacked with the method above, so fall back
             # to this
@@ -738,5 +800,6 @@ def load(path, group=None, sel=None, unpack=False):
 class SliceClass(object):
     def __getitem__(self, index):
         return index
+
 
 aslice = SliceClass()
