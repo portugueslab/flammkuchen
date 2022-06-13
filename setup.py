@@ -19,7 +19,7 @@ CLASSIFIERS = [
 
 args = dict(
     name="flammkuchen",
-    version="0.9.2",
+    version="1.0.0",
     url="https://github.com/portugueslab/flammkuchen",
     description="Easy saving and loading of hdf5 files in python (forked from DeepDish)",
     maintainer="Luigi Petrucco, Vilim Stih @portugueslab",
