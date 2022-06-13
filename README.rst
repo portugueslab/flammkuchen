@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/portugueslab/flammkuchen.svg?branch=master
-    :target: https://travis-ci.org/portugueslab/flammkuchen
+.. image:: https://github.com/portugueslab/flammkuchen/actions/workflows/main.yml/badge.svg
+    :target: https://github.com/portugueslab/flammkuchen/actions
 
 .. image:: https://img.shields.io/pypi/v/flammkuchen.svg
     :target: https://pypi.python.org/pypi/flammkuchen
