@@ -3,6 +3,9 @@ from setuptools import setup
 with open("requirements.txt") as f:
     required = f.read().splitlines()
 
+with open("requirements_dev.txt") as f:
+    required_dev = f.read().splitlines()
+
 CLASSIFIERS = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -22,6 +25,7 @@ args = dict(
     maintainer="Luigi Petrucco, Vilim Stih @portugueslab",
     maintainer_email="luigi.petrucco@gmail.com",
     install_requires=required,
+    extras_require=dict(dev=required_dev),
     packages=[
         "flammkuchen",
     ],
