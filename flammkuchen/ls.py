@@ -149,7 +149,6 @@ def print_row(
     parent_color="darkgray",
     key_color="white",
 ):
-
     s = "{}{}".format(
         paint(parent, parent_color, colorize=colorize),
         paint(key, key_color, colorize=colorize),
@@ -416,7 +415,6 @@ class ListNode(Node):
         file=sys.stdout,
         settings={},
     ):
-
         if level < max_level:
             for i, v in enumerate(self.children):
                 k = str(i)
