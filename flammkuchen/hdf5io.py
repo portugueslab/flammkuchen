@@ -596,7 +596,7 @@ def meta(path, node=None):
 
                 # If it is a DictNode, not a dict,
                 # go to its children
-                if type(tmp_node) == DictNode:
+                if isinstance(tmp_node, DictNode):
                     tmp_node = tmp_node.children
 
             else:
