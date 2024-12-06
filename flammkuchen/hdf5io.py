@@ -140,13 +140,13 @@ def _get_compression_filters(compression="default"):
 
 
 def _save_ndarray(handler, group, name, x, filters=None):
-    if np.issubdtype(x.dtype, np.unicode_):
+    if np.issubdtype(x.dtype, np.str_):
         # Convert unicode strings to pure byte arrays
         strtype = b"unicode"
         itemsize = x.itemsize // 4
         atom = tables.UInt8Atom()
         x = x.view(dtype=np.uint8)
-    elif np.issubdtype(x.dtype, np.string_):
+    elif np.issubdtype(x.dtype, np.bytes_):
         strtype = b"ascii"
         itemsize = x.itemsize
         atom = tables.StringAtom(itemsize)
@@ -365,7 +365,7 @@ def _load_specific_level(handler, grp, path, sel=None, pathtable=None):
             if sel is not None:
                 raise ValueError("Cannot slice this type")
             v = grp._v_attrs[vv[0]]
-            if isinstance(v, np.string_):
+            if isinstance(v, np.bytes_):
                 v = v.decode("utf-8")
             return v
         else:
@@ -500,9 +500,9 @@ def _load_nonlink_level(handler, level, pathtable, pathname):
             strtype = level._v_attrs.strtype
             itemsize = level._v_attrs.itemsize
             if strtype == b"unicode":
-                return level[:].view(dtype=(np.unicode_, itemsize))
+                return level[:].view(dtype=(np.str_, itemsize))
             elif strtype == b"ascii":
-                return level[:].view(dtype=(np.string_, itemsize))
+                return level[:].view(dtype=(np.bytes_, itemsize))
         # This serves two purposes:
         # (1) unpack big integers: the only time we save arrays like this
         # (2) unpack non-flammkuchen "scalars"
