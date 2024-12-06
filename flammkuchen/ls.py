@@ -1,6 +1,7 @@
 """
 Look inside HDF5 files from the terminal, especially those created by deepdish.
 """
+
 import os
 import re
 import sys
